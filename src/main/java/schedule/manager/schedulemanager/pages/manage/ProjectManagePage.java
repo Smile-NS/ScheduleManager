@@ -23,7 +23,7 @@ public class ProjectManagePage extends Page {
         sidebar.setPreferredSize(new Dimension(500, FRAME_HEIGHT));
         frame.draw(sidebar, BorderLayout.WEST);
 
-        TimeBar task = new TimeBar();
+        TimeTable task = new TimeTable();
         Timer timer = new Timer();
         timer.schedule(task, 0, 33);
     }

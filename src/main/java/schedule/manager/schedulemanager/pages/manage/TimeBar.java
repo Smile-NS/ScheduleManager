@@ -1,98 +1,52 @@
 package schedule.manager.schedulemanager.pages.manage;
 
-import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TimerTask;
 
-import static java.awt.Color.BLACK;
-import static java.awt.Color.WHITE;
+import static java.awt.Color.*;
 import static schedule.manager.schedulemanager.Main.DISPLAY_HEIGHT;
-import static schedule.manager.schedulemanager.pages.Page.*;
+import static schedule.manager.schedulemanager.pages.Page.gra;
+import static schedule.manager.schedulemanager.pages.Page.setLineWidth;
 
-public class TimeBar extends TimerTask {
+public class TimeBar {
 
-    private final Map<String, Long> phaseMap = new LinkedHashMap<>();
+    private final int HEIGHT;
+    private final int REM;
+    private final Color COLOR;
+    private final int PHASE;
 
-    protected final Map<String, Integer> sizeMap;
-
-    public TimeBar(){
-        LineBorder border = new LineBorder(Color.BLACK, 3, false);
-        panel.setBorder(border);
-
-        phaseMap.put("phase1", 10000L);
-        phaseMap.put("phase2", 2000L);
-        phaseMap.put("phase3", 30000L);
-        phaseMap.put("phase4", 25000L);
-        phaseMap.put("phase5", 40000L);
-
-        sizeMap = getSizeMap();
+    public TimeBar(Color color, int height, int phase) {
+        this.COLOR = color;
+        this.HEIGHT = height;
+        this.REM = DISPLAY_HEIGHT - HEIGHT;
+        this.PHASE = phase;
     }
 
-    @Override
-    public void run() {
-        setBackground();
+    public void progress() {
+        gra.setColor(COLOR);
+        gra.fillRect(200, REM, 300, HEIGHT);
+        setDifference();
 
-        int sum = 0;
-        for(Map.Entry<String, Integer> entry : sizeMap.entrySet()) {
-            int value = entry.getValue();
-            sum += value;
-            int y = DISPLAY_HEIGHT - sum;
-
-            gra.setColor(BLACK);
-            gra.drawLine(0, y, 500, y);
-        }
-        panel.draw();
+        setFrontLine();
     }
 
-    protected Map<String, Integer> getSizeMap() {
-        double min = getMinTime();
-        Map<String, Double> ratioMap = new LinkedHashMap<>();
-        Map<String, Integer> sizeMap = new LinkedHashMap<>();
-
-        double sum = 0;
-        for(Map.Entry<String, Long> entry : phaseMap.entrySet()){
-            long value = entry.getValue();
-            double ratio = value / min;
-            sum += ratio;
-
-            ratioMap.put(entry.getKey(), ratio);
-        }
-
-        double minSize = DISPLAY_HEIGHT / sum;
-        for(Map.Entry<String, Double> entry : ratioMap.entrySet()){
-            double ratio = entry.getValue();
-            int result = (int) (minSize * ratio);
-            sizeMap.put(entry.getKey(), result);
-        }
-
-        return sizeMap;
-    }
-
-    protected long getMinTime() {
-        long min = 0;
-        for(Map.Entry<String, Long> entry : phaseMap.entrySet()) {
-            long value = entry.getValue();
-            if (min == 0) {
-                min = value;
-                continue;
-            }
-            min = Math.min(value, min);
-        }
-        return min;
-    }
-
-    private void setBackground(){
-        gra.setColor(WHITE);
-        gra.fillRect(0, 0, 1000, DISPLAY_HEIGHT);
-
-        gra.setColor(BLACK);
+    private void setFrontLine() {
+        gra.setColor(RED);
         setLineWidth(3);
-        gra.drawLine(1, 0, 1, DISPLAY_HEIGHT);
 
-        setLineWidth(1);
-        gra.drawLine(100, 0, 100, DISPLAY_HEIGHT);
-        gra.drawLine(200, 0, 200, DISPLAY_HEIGHT);
+        gra.drawLine(0, REM, 500, REM);
+    }
+
+    private void setDifference() {
+        if (PHASE < REM) {
+            Color color = new Color(206, 255, 241);
+            gra.setColor(color);
+            gra.fillRect(100, PHASE, 100, REM - PHASE);
+        }
+
+        if (PHASE > REM) {
+            Color color = new Color(255, 179, 57);
+            gra.setColor(color);
+            gra.fillRect(100, REM, 100, PHASE - REM);
+        }
     }
 }
