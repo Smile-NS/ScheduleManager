@@ -1,13 +1,10 @@
 package schedule.manager.schedulemanager.pages.manage;
 
-import com.sun.org.apache.bcel.internal.generic.BALOAD;
-import schedule.manager.schedulemanager.SchedulePanel;
 import schedule.manager.schedulemanager.pages.Page;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.Timer;
 
 import static schedule.manager.schedulemanager.Main.FRAME_HEIGHT;
 
@@ -18,14 +15,15 @@ public class ProjectManagePage extends Page {
 
     public ProjectManagePage(File file){
         this.PROJECT = file;
-
         sidebar.setBackground(Color.WHITE);
-        sidebar.setPreferredSize(new Dimension(500, FRAME_HEIGHT));
+        sidebar.setPreferredSize(new Dimension(400, FRAME_HEIGHT));
         frame.draw(sidebar, BorderLayout.WEST);
 
-        TimeTable task = new TimeTable();
-        Timer timer = new Timer();
-        timer.schedule(task, 0, 33);
-    }
+        gra2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        Font font = new Font("SansSerif", Font.PLAIN, 20);
+        gra.setFont(font);
 
+        new TimeTable();
+    }
 }
