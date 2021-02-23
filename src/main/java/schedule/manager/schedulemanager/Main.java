@@ -8,6 +8,7 @@ import schedule.manager.schedulemanager.pages.manage.ProjectManagePage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 
 public class Main {
@@ -26,10 +27,6 @@ public class Main {
                 break;
             case OPTION:
                 new PhaseOptionPage();
-                break;
-            case MANAGE:
-                new ProjectManagePage(new File(""));
-            case TIME_BAR:
                 break;
         }
 

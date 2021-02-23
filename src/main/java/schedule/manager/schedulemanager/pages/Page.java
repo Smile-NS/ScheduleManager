@@ -17,7 +17,7 @@ import static java.awt.Color.WHITE;
 
 public class Page {
 
-    public static DisplayType disType = DisplayType.MANAGE;
+    public static DisplayType disType = DisplayType.MENU;
 
     protected static QuickJackson json;
 

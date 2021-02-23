@@ -41,7 +41,7 @@ public class TimeBar {
         gra.setColor(RED);
         setLineWidth(3);
 
-        gra.drawLine(TABLE_X, TABLE_Y + REM, TABLE_X + 500, REM);
+        gra.drawLine(TABLE_X, TABLE_Y + REM, TABLE_X + 500, TABLE_Y + REM);
     }
 
     public void drawDifference() {
@@ -56,8 +56,8 @@ public class TimeBar {
         }
     }
 
-    public boolean isTouch() {
-        return PHASE == REM;
+    public int getFrontLine() {
+        return TABLE_Y + REM;
     }
 
     public void next() {
@@ -72,7 +72,6 @@ public class TimeBar {
             log[1] = PHASE - REM;
             log[2] = OVER;
         } else log[0] = PHASE;
-
 
         logList.add(log);
     }
@@ -91,6 +90,15 @@ public class TimeBar {
 
             setLineWidth(3);
             gra.setColor(RED);
+
+        }
+    }
+
+    public void drawLogLine() {
+        for(int[] value : logList){
+            int start = value[0];
+            int height = value[1];
+            int type = value[2];
 
             int y = type == LESS ? start + height :
                     type == OVER ? start : start;

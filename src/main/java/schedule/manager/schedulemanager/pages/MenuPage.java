@@ -1,9 +1,12 @@
 package schedule.manager.schedulemanager.pages;
 
 import schedule.manager.schedulemanager.DisplayType;
+import schedule.manager.schedulemanager.jackson.QuickJackson;
+import schedule.manager.schedulemanager.pages.manage.ProjectManagePage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 
 import static java.awt.Color.WHITE;
@@ -31,7 +34,22 @@ public class MenuPage extends Page {
         int width = 250;
         int height = 50;
 
-        createButton(375, 490, width, height, "プロジェクトを開く");
+        JFileChooser saveFileDia = new JFileChooser();
+        saveFileDia.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        JButton openButton = createButton(375, 490, width, height, "プロジェクトを開く");
+        openButton.addActionListener(e -> {
+            int selected = saveFileDia.showSaveDialog(frame);
+            if (selected == JFileChooser.OPEN_DIALOG) {
+                File file = saveFileDia.getSelectedFile();
+                try {
+                    new ProjectManagePage(new QuickJackson(file));
+                    disType = DisplayType.MANAGE;
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+
         JButton createButton = createButton(375, 550, width, height, "新規プロジェクトを作成する");
         createButton.addActionListener(e -> {
             new CreateProjectPage();

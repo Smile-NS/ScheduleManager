@@ -12,116 +12,187 @@ import static schedule.manager.schedulemanager.Main.DISPLAY_HEIGHT;
 
 public class TimeTable extends Page implements Runnable {
 
-    private Map<String, Long> timeMap = new LinkedHashMap<>();
-    private Map<String, Integer> heightMap;
+    private final Map<String, Long> timeMap;
+    private final Map<String, Long> acuTimeMap;
+    private final Map<String, Integer> heightMap;
+    private final Map<String, Integer> acuHeightMap;
+    private final Map<String, String> logMap = new LinkedHashMap<>();
+
+    private TimeBar bar = new TimeBar(new Color(156, 255, 201), 0, 0);
 
     public static int TABLE_X = 100;
     public static int TABLE_Y = 0;
 
-    public TimeTable(){
-        timeMap.put("phase1", 12000L);
-        timeMap.put("phase2", 10000L);
-        timeMap.put("phase3", 10000L);
-        timeMap.put("phase4", 10000L);
-        timeMap.put("phase5", 10000L);
-        timeMap.put("phase6", 10000L);
+    public TimeTable(Map<String, Long> map) {
+        timeMap = map;
 
         Thread thread = new Thread(this);
         thread.start();
 
         LineBorder border = new LineBorder(Color.BLACK, 3, false);
         panel.setBorder(border);
+
+        acuTimeMap = getAcuTimeMap();
+
+        heightMap = getHeightMap();
+        acuHeightMap = getAcuHeightMap();
+
+        keyIt = timeMap.keySet().iterator();
+        keyList = new ArrayList<>(timeMap.keySet());
+        key = keyIt.next();
+        frontKey = key;
+        value = heightMap.get(key);
     }
 
-    private Iterator<String> sizeIt;
-    private int progress = 0;
+    private final Iterator<String> keyIt;
+    private final List<String> keyList;
     private String key;
+    private String frontKey;
+
+    private int progress = 0;
+    private int point = 0;
     private int value;
+    private long phaseTime = 0;
+    private long elapsedTime = 0;
+    private long totalDiff = 0;
 
     @Override
     public void run() {
         long projectTime = getProjectTime();
         long waitTime = projectTime / DISPLAY_HEIGHT;
         long excess = (projectTime % DISPLAY_HEIGHT) / waitTime;
+        totalDiff += excess;
         waitTime += excess;
-        timeMap = correctTime(timeMap, (projectTime % DISPLAY_HEIGHT) / waitTime);
-        heightMap = getHeightMap();
-        sizeIt = heightMap.keySet().iterator();
-        key = sizeIt.next();
-        value = heightMap.get(key);
 
-        long startTime;
-        long fpsTime = 0;
         int fps = 30;
         int disFPS = 0;
         int fpsCount = 0;
 
-        long runTime = System.currentTimeMillis();
+        String disPhaseTime = "00:00:00";
+
+        long time;
         long lateTime = 0;
 
+        long fpsTime = System.currentTimeMillis();
+        long runTime = System.currentTimeMillis();
         while (true) {
-            if ((System.currentTimeMillis() - fpsTime) >= 1000) {
+            time = System.currentTimeMillis() - fpsTime;
+
+            if (elapsedTime == acuTimeMap.get(frontKey)) {
+                progress = acuHeightMap.get(frontKey);
+                lateTime = 0;
+                frontKey = point < keyList.size() ? keyList.get(point++) : frontKey;
+            }
+
+            if ((System.currentTimeMillis() - runTime) >= waitTime) {
+                drawBackground();
+                drawTimeBar(disPhaseTime);
+                drawCell();
+                drawTime();
+                drawLogTime();
+
+                gra2.setColor(BLACK);
+                gra2.drawString("FPS: " + disFPS, TABLE_X + 400, DISPLAY_HEIGHT - 5);
+                panel.draw();
+
+                long diff = (System.currentTimeMillis() - runTime) - waitTime;
+                lateTime += diff;
+                totalDiff += diff;
+
+                runTime = System.currentTimeMillis();
+            }
+
+            if (lateTime >= waitTime) {
+                long n = lateTime / waitTime;
+                lateTime -= waitTime * n;
+                progress += n;
+            }
+
+            if (time >= 1000) {
                 fpsTime = System.currentTimeMillis();
                 disFPS = fpsCount;
                 fpsCount = 0;
 
-                projectTime -= 1000;
-                System.out.println(getTimeNotation(projectTime));
+                elapsedTime += 1000;
+                phaseTime += 1000;
+                long diff = time - 1000;
+                lateTime += diff;
+                totalDiff += diff;
+
+                disPhaseTime = getTimeNotation(phaseTime);
             }
             fpsCount++;
-            startTime = System.currentTimeMillis();
-
-            if ((System.currentTimeMillis() - runTime) >= waitTime) {
-
-                lateTime += (System.currentTimeMillis() - runTime) - waitTime;
-                runTime = System.currentTimeMillis();
-
-                drawBackground();
-                drawTimeBar();
-                drawCell();
-
-                gra2.drawString("FPS: " + disFPS, 0, DISPLAY_HEIGHT - 5);
-
-                panel.draw();
-                if (lateTime >= waitTime) {
-                    long n = lateTime / waitTime;
-                    lateTime -= waitTime * n;
-                    progress += n;
-                }
-            }
 
             try {
-                Thread.sleep(1000 / fps - (System.currentTimeMillis() - startTime));
+                Thread.sleep(1000 / fps);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void drawText() {
-        gra2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        gra2.drawString("あああ", 100, 100);
+    private void drawTime() {
+        for(Map.Entry<String, Integer> entry : acuHeightMap.entrySet()) {
+            String key = entry.getKey();
+            int y = entry.getValue();
+
+            gra2.setColor(BLACK);
+            gra2.drawString(getTimeNotation(acuTimeMap.get(key)), 0, DISPLAY_HEIGHT - y);
+            gra2.setColor(GRAY);
+            gra2.drawString(getTimeNotation(timeMap.get(key)), 0, DISPLAY_HEIGHT - y + 20);
+        }
     }
 
-    private void drawTimeBar() {
+    private void drawTimeBar(String disPhaseTime) {
         Color color = new Color(156, 255, 201);
         int phase = DISPLAY_HEIGHT - value;
-        TimeBar bar = new TimeBar(color, progress, phase);
+        bar = new TimeBar(color, progress, phase);
 
         bar.progress();
-        bar.drawLogs();
         bar.drawDifference();
+        bar.drawLogs();
+        bar.drawLogLine();
         bar.drawFrontLine();
 
-        progress++;
+        gra2.drawString(getTimeNotation(elapsedTime), 0, bar.getFrontLine() + 10);
 
-        if (!sizeIt.hasNext()) return;
-        if (bar.isTouch()) {
-            key = sizeIt.next();
-            value += heightMap.get(key);
-            bar.next();
+        int y = phase + (heightMap.get(key) / 2);
+        gra2.setColor(BLACK);
+        gra2.drawString(disPhaseTime, TABLE_X + 300, y);
+
+        long diffPhaseTime = acuTimeMap.get(key) - elapsedTime;
+        boolean over = diffPhaseTime < 0;
+        diffPhaseTime *= diffPhaseTime < 0 ? -1 : 1;
+        gra2.drawString(
+                over ? "+" + getTimeNotation(diffPhaseTime) : "-" + getTimeNotation(diffPhaseTime),
+                TABLE_X + 105, y);
+
+        progress++;
+    }
+
+    private void drawLogTime() {
+        gra2.setColor(BLACK);
+        for(Map.Entry<String, String> entry : logMap.entrySet()){
+            String key = entry.getKey();
+            int y = DISPLAY_HEIGHT - (acuHeightMap.get(key)) + (heightMap.get(key) / 2);
+
+            gra2.drawString(entry.getValue(), TABLE_X + 5, y);
         }
+    }
+
+    public void next() {
+        phaseTime = 0;
+        bar.next();
+
+        long diffPhaseTime = acuTimeMap.get(key) - elapsedTime;
+        boolean over = diffPhaseTime < 0;
+        diffPhaseTime *= diffPhaseTime < 0 ? -1 : 1;
+         String disDiffTime = over ? "+" + getTimeNotation(diffPhaseTime) : "-" + getTimeNotation(diffPhaseTime);
+         logMap.put(key, disDiffTime);
+
+        if (!keyIt.hasNext()) return;
+        key = keyIt.next();
+        value += heightMap.get(key);
     }
 
     private void drawCell(){
@@ -131,12 +202,8 @@ public class TimeTable extends Page implements Runnable {
         gra.drawLine(TABLE_X + 100, TABLE_Y, TABLE_X + 100, DISPLAY_HEIGHT);
         gra.drawLine(TABLE_X + 200, TABLE_Y, TABLE_X + 200, DISPLAY_HEIGHT);
 
-        int sum = 0;
-        for(Map.Entry<String, Integer> entry : heightMap.entrySet()) {
-            int value = entry.getValue();
-            sum += value;
-            int y = DISPLAY_HEIGHT - sum;
-
+        for(int value : acuHeightMap.values()) {
+            int y = DISPLAY_HEIGHT - value;
             gra.drawLine(TABLE_X, TABLE_Y + y, TABLE_X + 500, TABLE_Y + y);
         }
 
@@ -148,28 +215,6 @@ public class TimeTable extends Page implements Runnable {
     private void drawBackground(){
         gra.setColor(WHITE);
         gra.fillRect(0, 0, 1000, DISPLAY_HEIGHT);
-    }
-
-    private LinkedHashMap<String, Long> correctTime(Map<String, Long> map, long excess) {
-        if (excess == 0) return new LinkedHashMap<>(map);
-
-        List<String> keyList = new ArrayList<>(map.keySet());
-        int random = (int) (Math.random() * keyList.size());
-        int size = keyList.size();
-        long average = excess < size ? excess : excess / size;
-
-        if (excess < size) {
-            String key = keyList.get(random);
-            map.put(key, map.get(key) - average);
-            return new LinkedHashMap<>(map);
-        }
-
-        for(Map.Entry<String, Long> entry : timeMap.entrySet()){
-            String key = entry.getKey();
-            map.put(key, map.get(key) - average);
-        }
-
-        return new LinkedHashMap<>(map);
     }
 
     private String getTimeNotation(long time) {
@@ -186,6 +231,28 @@ public class TimeTable extends Page implements Runnable {
         result += second < 10 ? "0" + second : second;
 
         return result;
+    }
+
+    private Map<String, Long> getAcuTimeMap() {
+        Map<String, Long> map = new LinkedHashMap<>();
+        long sum = 0;
+        for(Map.Entry<String, Long> entry : timeMap.entrySet()){
+            sum += entry.getValue();
+            map.put(entry.getKey(), sum);
+        }
+
+        return map;
+    }
+
+    private Map<String, Integer> getAcuHeightMap() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        int sum = 0;
+        for(Map.Entry<String, Integer> entry : heightMap.entrySet()){
+            sum += entry.getValue();
+            map.put(entry.getKey(), sum);
+        }
+
+        return map;
     }
 
     private long getProjectTime() {

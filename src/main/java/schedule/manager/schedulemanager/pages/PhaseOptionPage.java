@@ -1,11 +1,13 @@
 package schedule.manager.schedulemanager.pages;
 
+import schedule.manager.schedulemanager.DisplayType;
 import schedule.manager.schedulemanager.exceptions.IllegalOperationException;
 import schedule.manager.schedulemanager.exceptions.IllegalSettingException;
+import schedule.manager.schedulemanager.pages.manage.ProjectManagePage;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +30,7 @@ public class PhaseOptionPage extends Page{
                 if (Phase.getCount() == 0)
                     throw new IllegalSettingException("フェーズを追加してください");
                 saveProject();
+                onClickedNext();
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -77,9 +80,15 @@ public class PhaseOptionPage extends Page{
     }
 
     @Override
+    protected void onClickedNext() throws IOException{
+        new ProjectManagePage(json);
+        disType = DisplayType.MANAGE;
+    }
+
+    @Override
     protected void saveProject() throws Exception{
         List<Phase> list = Phase.getPhases();
-        Map<String, Long> phaseMap = new HashMap<>();
+        Map<String, Long> phaseMap = new LinkedHashMap<>();
 
         for (Phase phase : list)
             phaseMap.put(phase.getTitle(), phase.getTime());
