@@ -9,8 +9,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-import static java.awt.Color.WHITE;
-
 public class MenuPage extends Page {
 
     private final JLabel titleIcon = new JLabel();
@@ -34,13 +32,14 @@ public class MenuPage extends Page {
         int width = 250;
         int height = 50;
 
-        JFileChooser saveFileDia = new JFileChooser();
-        saveFileDia.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        JFileChooser openFileDia = new JFileChooser();
+        openFileDia.setFileSelectionMode(JFileChooser.FILES_ONLY);
         JButton openButton = createButton(375, 490, width, height, "プロジェクトを開く");
         openButton.addActionListener(e -> {
-            int selected = saveFileDia.showSaveDialog(frame);
-            if (selected == JFileChooser.OPEN_DIALOG) {
-                File file = saveFileDia.getSelectedFile();
+            int selected = openFileDia.showOpenDialog(frame);
+            if (selected == JFileChooser.APPROVE_OPTION) {
+                File file = openFileDia.getSelectedFile();
+                System.out.println(true);
                 try {
                     new ProjectManagePage(new QuickJackson(file));
                     disType = DisplayType.MANAGE;

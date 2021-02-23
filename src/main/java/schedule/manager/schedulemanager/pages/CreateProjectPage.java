@@ -8,11 +8,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.awt.Color.WHITE;
 
 public class CreateProjectPage extends Page {
 

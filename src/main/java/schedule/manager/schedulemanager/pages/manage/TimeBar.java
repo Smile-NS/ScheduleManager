@@ -2,14 +2,14 @@ package schedule.manager.schedulemanager.pages.manage;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import static java.awt.Color.*;
+import static java.awt.Color.RED;
+import static java.awt.Color.WHITE;
 import static schedule.manager.schedulemanager.Main.DISPLAY_HEIGHT;
 import static schedule.manager.schedulemanager.pages.Page.*;
-import static schedule.manager.schedulemanager.pages.manage.TimeTable.*;
+import static schedule.manager.schedulemanager.pages.manage.TimeTable.TABLE_X;
+import static schedule.manager.schedulemanager.pages.manage.TimeTable.TABLE_Y;
 
 public class TimeBar {
 

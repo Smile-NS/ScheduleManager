@@ -4,12 +4,8 @@ import schedule.manager.schedulemanager.pages.CreateProjectPage;
 import schedule.manager.schedulemanager.pages.MenuPage;
 import schedule.manager.schedulemanager.pages.Page;
 import schedule.manager.schedulemanager.pages.PhaseOptionPage;
-import schedule.manager.schedulemanager.pages.manage.ProjectManagePage;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.Timer;
 
 public class Main {
 

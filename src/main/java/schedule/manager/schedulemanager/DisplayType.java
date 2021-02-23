@@ -5,5 +5,4 @@ public enum DisplayType {
     CREATE_PROJECT,
     OPTION,
     MANAGE,
-    TIME_BAR
 }
