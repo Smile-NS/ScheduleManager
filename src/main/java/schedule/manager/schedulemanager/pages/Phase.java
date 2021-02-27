@@ -43,7 +43,7 @@ public class Phase extends Page{
         seconds.setHorizontalAlignment(JTextField.RIGHT);
         JLabel L_seconds = createTextLabel(x + 150, y, 20, 25, "s");
 
-        ImageIcon icon = createImage(replaceSep("textures\\button\\remove.png"), 25,25);
+        ImageIcon icon = createImage("textures/button/remove.png", 25,25);
         JButton button = createButton(x + 170, y, 25, 25, icon);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);

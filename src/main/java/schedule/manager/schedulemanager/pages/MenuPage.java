@@ -57,7 +57,7 @@ public class MenuPage extends Page {
     }
 
     private void setTitleMeta() throws IOException {
-        ImageIcon icon = createImage("textures\\icon.png", 100, 100);
+        ImageIcon icon = createImage("textures/icon.png", 100, 100);
 
         titleIcon.setIcon(icon);
         titleIcon.setBounds(450, 325, 100, 100);

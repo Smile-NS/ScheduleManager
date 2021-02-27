@@ -12,9 +12,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static java.awt.Color.WHITE;
 
+/**
+ * 各ページの親クラス
+ * 使用頻度の高いメソッドなどを提供する
+ */
 public class Page {
 
     public static DisplayType disType = DisplayType.MENU;
@@ -34,6 +39,15 @@ public class Page {
     public static final int START_X = 150;
     public static final int START_Y = 25;
 
+    /**
+     * テキスト入りボタンを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @param text テキスト
+     * @return 生成されたテキスト入りJButton
+     */
     public static JButton createButton(int x, int y, int width, int height, String text){
         JButton button = createButton(x, y, width, height);
         button.setText(text);
@@ -41,6 +55,15 @@ public class Page {
         return button;
     }
 
+    /**
+     * 画像入りボタンを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @param icon 画像
+     * @return 生成された画像入りJButton
+     */
     public static JButton createButton(int x, int y, int width, int height, ImageIcon icon){
         JButton button = createButton(x, y, width, height);
         button.setIcon(icon);
@@ -48,6 +71,14 @@ public class Page {
         return button;
     }
 
+    /**
+     * ボタンを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @return 生成されたJButton
+     */
     public static JButton createButton(int x, int y, int width, int height){
         JButton button = new JButton();
 
@@ -62,18 +93,38 @@ public class Page {
         return button;
     }
 
+    /**
+     * 「次へ」のボタンを生成する
+     * @param x x座標
+     * @param y y座標
+     * @return 生成させたJButton
+     */
     public static JButton createNextButton(int x, int y){
         return createButton(x, y, 120, 50, "次へ");
     }
 
+    /**
+     * チェックボックスを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @param text テキスト
+     * @param textPos テキストの位置
+     * @param textGap テキストとチェックボックスまでの距離
+     * @return 生成されたJCheckBox
+     */
     public static JCheckBox createCheckBox(int x, int y, int width, int height, String text, int textPos, int textGap){
-        String texturePath = replaceSep("textures\\check_box");
-        ImageIcon icon = new ImageIcon(
-                replaceSep(texturePath + "\\non_check.png")
-        );
-        ImageIcon selectedIcon = new ImageIcon(
-                replaceSep(texturePath + "\\check.png")
-        );
+        String texturePath = "textures/check_box";
+        ImageIcon icon = null;
+        ImageIcon selectedIcon = null;
+        try {
+            icon = createImage(texturePath + "/non_check.png");
+            selectedIcon = createImage(texturePath + "/check.png");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         JCheckBox checkBox = new JCheckBox(text);
 
         checkBox.setBounds(x, y, width, height);
@@ -90,6 +141,15 @@ public class Page {
         return checkBox;
     }
 
+    /**
+     * テキストラベルを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @param text テキスト
+     * @return 生成されたJLabel
+     */
     public static JLabel createTextLabel(int x, int y, int width, int height, String text){
         JLabel label = new JLabel(text);
         label.setFont(FONT);
@@ -100,6 +160,14 @@ public class Page {
         return label;
     }
 
+    /**
+     * テキストフィールドを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @return 生成されたJTextField
+     */
     public JTextField createTextField(int x, int y, int width, int height){
         JTextField field = new JTextField();
         field.setFont(SMALL_FONT);
@@ -110,6 +178,15 @@ public class Page {
         return field;
     }
 
+    /**
+     * 既に入力されているテキストフィールドを生成する
+     * @param x x座標
+     * @param y y座標
+     * @param width 幅
+     * @param height 高さ
+     * @param text テキスト
+     * @return 既に入力されている生成されたJTextField
+     */
     public JTextField createTextField(int x, int y, int width, int height, String text){
         JTextField field = createTextField(x, y, width, height);
         field.setText(text);
@@ -117,6 +194,12 @@ public class Page {
         return field;
     }
 
+    /**
+     * 利用できるセーブファイルであるか
+     * @param file 判定するファイル
+     * @param name ファイル名
+     * @return 利用できるセーブファイルであればtrue、そうでなければfalse
+     */
     public boolean isSaveFile(File file, String name){
         StringBuilder path = new StringBuilder(file.getPath());
         if (!String.valueOf(path).contains(File.separator)) return false;
@@ -129,6 +212,10 @@ public class Page {
         return new File(String.valueOf(fileDir)).exists();
     }
 
+    /**
+     * プロジェクトを保存する
+     * @throws Exception IOException
+     */
     protected void saveProject() throws Exception{
         json.save();
         System.out.println("プロジェクトを保存しました");
@@ -138,8 +225,18 @@ public class Page {
     }
 
     public static ImageIcon createImage(String filePath, int width, int height) throws IOException {
-        BufferedImage original = ImageIO.read(new File(Page.replaceSep(filePath)));
+        InputStream stream = Page.class.getClassLoader().getResourceAsStream(filePath);
+        assert stream != null;
+        BufferedImage original = ImageIO.read(stream);
         Image icon = original.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+        return new ImageIcon(icon);
+    }
+
+    public static ImageIcon createImage(String filePath) throws IOException {
+        InputStream stream = Page.class.getClassLoader().getResourceAsStream(filePath);
+        assert stream != null;
+        BufferedImage original = ImageIO.read(stream);
+        Image icon = original.getScaledInstance(original.getWidth(), original.getHeight(), Image.SCALE_DEFAULT);
         return new ImageIcon(icon);
     }
 

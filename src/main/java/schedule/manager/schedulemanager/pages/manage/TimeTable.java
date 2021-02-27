@@ -75,8 +75,9 @@ public class TimeTable extends Page implements Runnable {
 
         long fpsTime = System.currentTimeMillis();
         long runTime = System.currentTimeMillis();
+
+        process(disPhaseTime, disFPS);
         while (true) {
-            time = System.currentTimeMillis() - fpsTime;
 
             if (elapsedTime == acuTimeMap.get(frontKey)) {
                 progress = acuHeightMap.get(frontKey);
@@ -84,20 +85,30 @@ public class TimeTable extends Page implements Runnable {
                 frontKey = point < keyList.size() ? keyList.get(point++) : frontKey;
             }
 
-            if ((System.currentTimeMillis() - runTime) >= waitTime) {
-                drawBackground();
-                drawTimeBar(disPhaseTime);
-                drawCell();
-                drawTime();
-                drawLogTime();
+            time = System.currentTimeMillis() - fpsTime;
+            if (time >= 1000) {
+                fpsTime = System.currentTimeMillis();
+                disFPS = fpsCount;
+                fpsCount = 0;
 
-                gra2.setColor(BLACK);
-                gra2.drawString("FPS: " + disFPS, TABLE_X + 400, DISPLAY_HEIGHT - 5);
-                panel.draw();
+                elapsedTime += 1000;
+                phaseTime += 1000;
+
+                long diff = time - 1000;
+                totalDiff += diff;
+
+                disPhaseTime = getTimeNotation(phaseTime);
+                process(disPhaseTime, disFPS);
+            }
+            fpsCount++;
+
+            if ((System.currentTimeMillis() - runTime) >= waitTime) {
+
+                process(disPhaseTime, disFPS);
+                progress++;
 
                 long diff = (System.currentTimeMillis() - runTime) - waitTime;
                 lateTime += diff;
-                totalDiff += diff;
 
                 runTime = System.currentTimeMillis();
             }
@@ -108,21 +119,6 @@ public class TimeTable extends Page implements Runnable {
                 progress += n;
             }
 
-            if (time >= 1000) {
-                fpsTime = System.currentTimeMillis();
-                disFPS = fpsCount;
-                fpsCount = 0;
-
-                elapsedTime += 1000;
-                phaseTime += 1000;
-                long diff = time - 1000;
-                lateTime += diff;
-                totalDiff += diff;
-
-                disPhaseTime = getTimeNotation(phaseTime);
-            }
-            fpsCount++;
-
             try {
                 Thread.sleep(1000 / fps);
             } catch (InterruptedException e) {
@@ -131,7 +127,23 @@ public class TimeTable extends Page implements Runnable {
         }
     }
 
-    private void drawTime() {
+    private void process(String disPhaseTime, int disFPS) {
+        drawBackground();
+        drawTimeBar();
+        drawCell();
+        drawTime(disPhaseTime);
+        drawLogTime();
+        drawFPS(disFPS);
+
+        panel.draw();
+    }
+
+    private void drawFPS(int disFPS) {
+        gra2.setColor(BLACK);
+        gra2.drawString("FPS: " + disFPS, TABLE_X + 400, DISPLAY_HEIGHT - 5);
+    }
+
+    private void drawTime(String disPhaseTime) {
         for(Map.Entry<String, Integer> entry : acuHeightMap.entrySet()) {
             String key = entry.getKey();
             int y = entry.getValue();
@@ -141,9 +153,21 @@ public class TimeTable extends Page implements Runnable {
             gra2.setColor(GRAY);
             gra2.drawString(getTimeNotation(timeMap.get(key)), 0, DISPLAY_HEIGHT - y + 20);
         }
+
+        int phase = DISPLAY_HEIGHT - value;
+        int y = phase + (heightMap.get(key) / 2);
+        gra2.setColor(BLACK);
+        gra2.drawString(disPhaseTime, TABLE_X + 300, y);
+
+        long diffPhaseTime = acuTimeMap.get(key) - elapsedTime;
+        boolean over = diffPhaseTime < 0;
+        diffPhaseTime *= diffPhaseTime < 0 ? -1 : 1;
+        gra2.drawString(
+                over ? "+" + getTimeNotation(diffPhaseTime) : "-" + getTimeNotation(diffPhaseTime),
+                TABLE_X + 105, y);
     }
 
-    private void drawTimeBar(String disPhaseTime) {
+    private void drawTimeBar() {
         Color color = new Color(156, 255, 201);
         int phase = DISPLAY_HEIGHT - value;
         bar = new TimeBar(color, progress, phase);
@@ -155,19 +179,6 @@ public class TimeTable extends Page implements Runnable {
         bar.drawFrontLine();
 
         gra2.drawString(getTimeNotation(elapsedTime), 0, bar.getFrontLine() + 10);
-
-        int y = phase + (heightMap.get(key) / 2);
-        gra2.setColor(BLACK);
-        gra2.drawString(disPhaseTime, TABLE_X + 300, y);
-
-        long diffPhaseTime = acuTimeMap.get(key) - elapsedTime;
-        boolean over = diffPhaseTime < 0;
-        diffPhaseTime *= diffPhaseTime < 0 ? -1 : 1;
-        gra2.drawString(
-                over ? "+" + getTimeNotation(diffPhaseTime) : "-" + getTimeNotation(diffPhaseTime),
-                TABLE_X + 105, y);
-
-        progress++;
     }
 
     private void drawLogTime() {

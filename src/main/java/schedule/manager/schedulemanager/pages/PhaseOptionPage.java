@@ -42,7 +42,7 @@ public class PhaseOptionPage extends Page{
         createTextLabel(200, 60, 100, 25, "追加");
 
         JButton button = createButton(250, 60, 25, 25,
-                createImage("textures\\button\\add.png", 25, 25));
+                createImage("textures/button/add.png", 25, 25));
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
 

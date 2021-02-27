@@ -14,6 +14,7 @@ public class Main {
 
     public static void main(String[] args){
 
+        // デバッグ用
         switch (Page.disType) {
             case MENU:
                 new MenuPage();
