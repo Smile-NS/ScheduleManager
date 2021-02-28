@@ -10,6 +10,9 @@ import java.util.List;
 import static java.awt.Color.*;
 import static schedule.manager.schedulemanager.Main.DISPLAY_HEIGHT;
 
+/**
+ * タイムバーを操作するクラス
+ */
 public class TimeTable extends Page implements Runnable {
 
     private final Map<String, Long> timeMap;
@@ -23,6 +26,10 @@ public class TimeTable extends Page implements Runnable {
     public static int TABLE_X = 100;
     public static int TABLE_Y = 0;
 
+    /**
+     * コンストラクタ
+     * @param map フェーズのMap
+     */
     public TimeTable(Map<String, Long> map) {
         timeMap = map;
 
@@ -56,6 +63,9 @@ public class TimeTable extends Page implements Runnable {
     private long elapsedTime = 0;
     private long totalDiff = 0;
 
+    /**
+     * 主要処理部分
+     */
     @Override
     public void run() {
         long projectTime = getProjectTime();
@@ -127,6 +137,11 @@ public class TimeTable extends Page implements Runnable {
         }
     }
 
+    /**
+     * 描画処理
+     * @param disPhaseTime 表示する経過時間
+     * @param disFPS FPS
+     */
     private void process(String disPhaseTime, int disFPS) {
         drawBackground();
         drawTimeBar();
@@ -138,11 +153,19 @@ public class TimeTable extends Page implements Runnable {
         panel.draw();
     }
 
+    /**
+     * FPSを描画する
+     * @param disFPS FPS
+     */
     private void drawFPS(int disFPS) {
         gra2.setColor(BLACK);
         gra2.drawString("FPS: " + disFPS, TABLE_X + 400, DISPLAY_HEIGHT - 5);
     }
 
+    /**
+     * 時間を描画する
+     * @param disPhaseTime 表示する経過時間
+     */
     private void drawTime(String disPhaseTime) {
         for(Map.Entry<String, Integer> entry : acuHeightMap.entrySet()) {
             String key = entry.getKey();
@@ -167,6 +190,9 @@ public class TimeTable extends Page implements Runnable {
                 TABLE_X + 105, y);
     }
 
+    /**
+     * タイムバーを描画する
+     */
     private void drawTimeBar() {
         Color color = new Color(156, 255, 201);
         int phase = DISPLAY_HEIGHT - value;
@@ -181,6 +207,9 @@ public class TimeTable extends Page implements Runnable {
         gra2.drawString(getTimeNotation(elapsedTime), 0, bar.getFrontLine() + 10);
     }
 
+    /**
+     * 記録用のバーを表示する
+     */
     private void drawLogTime() {
         gra2.setColor(BLACK);
         for(Map.Entry<String, String> entry : logMap.entrySet()){
@@ -191,21 +220,9 @@ public class TimeTable extends Page implements Runnable {
         }
     }
 
-    public void next() {
-        phaseTime = 0;
-        bar.next();
-
-        long diffPhaseTime = acuTimeMap.get(key) - elapsedTime;
-        boolean over = diffPhaseTime < 0;
-        diffPhaseTime *= diffPhaseTime < 0 ? -1 : 1;
-         String disDiffTime = over ? "+" + getTimeNotation(diffPhaseTime) : "-" + getTimeNotation(diffPhaseTime);
-         logMap.put(key, disDiffTime);
-
-        if (!keyIt.hasNext()) return;
-        key = keyIt.next();
-        value += heightMap.get(key);
-    }
-
+    /**
+     * セルを描画する
+     */
     private void drawCell(){
         gra.setColor(BLACK);
 
@@ -223,11 +240,37 @@ public class TimeTable extends Page implements Runnable {
         gra.drawLine(TABLE_X, TABLE_Y, TABLE_X, DISPLAY_HEIGHT);
     }
 
+    /**
+     * 背景を描画する
+     */
     private void drawBackground(){
         gra.setColor(WHITE);
         gra.fillRect(0, 0, 1000, DISPLAY_HEIGHT);
     }
 
+    /**
+     * 次のフェーズへ
+     */
+    public void next() {
+        phaseTime = 0;
+        bar.next();
+
+        long diffPhaseTime = acuTimeMap.get(key) - elapsedTime;
+        boolean over = diffPhaseTime < 0;
+        diffPhaseTime *= diffPhaseTime < 0 ? -1 : 1;
+        String disDiffTime = over ? "+" + getTimeNotation(diffPhaseTime) : "-" + getTimeNotation(diffPhaseTime);
+        logMap.put(key, disDiffTime);
+
+        if (!keyIt.hasNext()) return;
+        key = keyIt.next();
+        value += heightMap.get(key);
+    }
+
+    /**
+     * 時間(ms)をh:m:sの形式で表した時間に変換する
+     * @param time 時間(ms)
+     * @return h:m:sの形式で表した時間
+     */
     private String getTimeNotation(long time) {
         time /= 1000;
         long hour = time / 3600;
@@ -244,6 +287,10 @@ public class TimeTable extends Page implements Runnable {
         return result;
     }
 
+    /**
+     * 累積時間のMapを取得する
+     * @return 累積時間のMap
+     */
     private Map<String, Long> getAcuTimeMap() {
         Map<String, Long> map = new LinkedHashMap<>();
         long sum = 0;
@@ -255,6 +302,10 @@ public class TimeTable extends Page implements Runnable {
         return map;
     }
 
+    /**
+     * 累積の高さのMapを取得する
+     * @return 累積の高さのMap
+     */
     private Map<String, Integer> getAcuHeightMap() {
         Map<String, Integer> map = new LinkedHashMap<>();
         int sum = 0;
@@ -266,6 +317,10 @@ public class TimeTable extends Page implements Runnable {
         return map;
     }
 
+    /**
+     * プロジェクト全体の時間を取得する
+     * @return プロジェクト全体の時間
+     */
     private long getProjectTime() {
         long result = 0;
         for(long value : timeMap.values()) result += value;
@@ -273,6 +328,10 @@ public class TimeTable extends Page implements Runnable {
         return result;
     }
 
+    /**
+     * 高さのMapを取得する
+     * @return 高さのMap
+     */
     private Map<String, Integer> getHeightMap() {
         double min = getMinTime();
         Map<String, Double> ratioMap = new LinkedHashMap<>();
@@ -297,6 +356,10 @@ public class TimeTable extends Page implements Runnable {
         return heightMap;
     }
 
+    /**
+     * 最短のフェーズの時間を取得する
+     * @return 最短のフェーズの時間
+     */
     private long getMinTime() {
         long min = 0;
         for(Map.Entry<String, Long> entry : timeMap.entrySet()) {

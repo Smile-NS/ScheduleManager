@@ -11,6 +11,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * プロジェクトの設定をするクラス
+ */
 public class CreateProjectPage extends Page {
 
     private final JTextField F_fileDir = createTextField(150, 50, 660, 25,
@@ -20,6 +23,9 @@ public class CreateProjectPage extends Page {
     private final JCheckBox C_projTime;
     private final JCheckBox C_phaseTime;
 
+    /**
+     * コンストラクタ
+     */
     public CreateProjectPage(){
         init();
 
@@ -38,7 +44,10 @@ public class CreateProjectPage extends Page {
         panel.add(saveFileDia);
         panel.add(F_projName);
     }
-    
+
+    /**
+     * プロジェクトの保存先を設定する領域
+     */
     private void setDirSelectField(){
 
         createTextLabel(START_X, START_Y, 200, 25, "プロジェクトの保存先");
@@ -54,6 +63,9 @@ public class CreateProjectPage extends Page {
         });
     }
 
+    /**
+     * プロジェクトの名前を設定する領域
+     */
     private void setProjNameField(){
         createTextLabel(150, 125, 200, 25, "プロジェクトの名前");
 
@@ -76,6 +88,9 @@ public class CreateProjectPage extends Page {
         });
     }
 
+    /**
+     * プロジェクトの名前の入力欄とファイルパスの入力欄を同期させる
+     */
     private void syncFilePath(){
         StringBuilder str = new StringBuilder(F_fileDir.getText());
         if (!String.valueOf(str).contains(File.separator)) return;
@@ -89,6 +104,9 @@ public class CreateProjectPage extends Page {
         F_fileDir.setText(String.valueOf(str));
     }
 
+    /**
+     * 「次へ」のボタンを設置する
+     */
     private void setNextButton() {
         JButton next = createNextButton(600, 600);
         next.addActionListener(e -> {
@@ -100,6 +118,10 @@ public class CreateProjectPage extends Page {
         });
     }
 
+    /**
+     * 「次へ」のボタンを押したときの処理
+     * @throws Exception セーブ時に投げられる例外
+     */
     @Override
     protected void onClickedNext() throws Exception{
         String title = F_projName.getText();
@@ -116,6 +138,9 @@ public class CreateProjectPage extends Page {
         new PhaseOptionPage();
     }
 
+    /**
+     * 「キャンセル」のボタンを押した時の処理
+     */
     private void setCancelButton(){
         JButton cancelButton = createButton(730, 600, 120, 50, "キャンセル");
         cancelButton.addActionListener(e -> {
@@ -124,6 +149,9 @@ public class CreateProjectPage extends Page {
         });
     }
 
+    /**
+     * 時間進行タイプを設定する領域
+     */
     private void setSelectTimeField(){
         C_projTime.setSelected(true);
         C_projTime.addActionListener(e -> C_phaseTime.setSelected(false));
@@ -132,6 +160,10 @@ public class CreateProjectPage extends Page {
         createTextLabel(150, 225, 200, 25, "時間進行タイプの設定");
     }
 
+    /**
+     * プロジェクトを保存する
+     * @throws Exception セーブ時に投げられる例外
+     */
     @Override
     protected void saveProject() throws Exception{
         Map<String, Object> config = new HashMap<>();

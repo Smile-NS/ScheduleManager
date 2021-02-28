@@ -12,12 +12,19 @@ import java.util.Map;
 import static schedule.manager.schedulemanager.Main.DISPLAY_HEIGHT;
 import static schedule.manager.schedulemanager.Main.FRAME_HEIGHT;
 
+/**
+ * スケジュール操作用クラス
+ */
 public class ProjectManagePage extends Page {
 
     private final JPanel sidebar = new JPanel();
     private final TimeTable table;
 
-    public ProjectManagePage(QuickJackson json) throws IOException {
+    /**
+     * コンストラクタ
+     * @param json プロジェクト
+     */
+    public ProjectManagePage(QuickJackson json) {
         init();
         sidebar.setLayout(null);
         sidebar.setBackground(Color.WHITE);
@@ -34,6 +41,9 @@ public class ProjectManagePage extends Page {
         table = new TimeTable(getTimeMap(json));
     }
 
+    /**
+     * 「次へ」のボタンを生成する
+     */
     private void setNextButton() {
         JButton button = new JButton("次のフェーズへ");
         button.setBounds(100, 400, 200, 50);
@@ -45,6 +55,11 @@ public class ProjectManagePage extends Page {
         button.addActionListener(e -> table.next());
     }
 
+    /**
+     * プロジェクトの時間をミリ秒に変換する
+     * @param json プロジェクト
+     * @return 変換後の時間Map
+     */
     private Map<String, Long> getTimeMap(QuickJackson json) {
         Map<String, Long> map = new LinkedHashMap<>();
 

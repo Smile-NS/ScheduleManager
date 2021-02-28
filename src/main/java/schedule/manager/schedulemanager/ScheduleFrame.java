@@ -8,8 +8,14 @@ import java.io.IOException;
 import static java.awt.Color.BLACK;
 import static schedule.manager.schedulemanager.Main.FRAME_HEIGHT;
 
+/**
+ * メインウィンドウの生成用クラス
+ */
 public class ScheduleFrame extends JFrame {
 
+    /**
+     * コンストラクタ
+     */
     public ScheduleFrame(){
         try {
             ImageIcon icon = Page.createImage("textures/icon.png");
@@ -26,6 +32,11 @@ public class ScheduleFrame extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * ウィンドウの変更内容を描画する
+     * @param panel パネル
+     * @param layout レイアウト
+     */
     public void draw(JPanel panel, String layout){
         getContentPane().add(panel, layout);
         repaint();

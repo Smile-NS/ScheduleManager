@@ -214,36 +214,64 @@ public class Page {
 
     /**
      * プロジェクトを保存する
-     * @throws Exception IOException
+     * @throws Exception セーブ時に投げられる例外
      */
     protected void saveProject() throws Exception{
         json.save();
         System.out.println("プロジェクトを保存しました");
     }
 
+    /**
+     * 「次へ」のボタンを押したときの処理
+     * @throws Exception Exception
+     */
     protected void onClickedNext() throws Exception{
     }
 
-    public static ImageIcon createImage(String filePath, int width, int height) throws IOException {
-        InputStream stream = Page.class.getClassLoader().getResourceAsStream(filePath);
+    /**
+     * 縦横の比を維持した画像を生成する
+     * @param path 画像のパス
+     * @param width 幅
+     * @param height 高さ
+     * @return 縦横の比を維持したImageIcon
+     * @throws IOException IOException
+     */
+    public static ImageIcon createImage(String path, int width, int height) throws IOException {
+        InputStream stream = Page.class.getClassLoader().getResourceAsStream(path);
         assert stream != null;
         BufferedImage original = ImageIO.read(stream);
         Image icon = original.getScaledInstance(width, height, Image.SCALE_DEFAULT);
         return new ImageIcon(icon);
     }
 
-    public static ImageIcon createImage(String filePath) throws IOException {
-        InputStream stream = Page.class.getClassLoader().getResourceAsStream(filePath);
+    /**
+     * 画像を生成する
+     * @param path 画像のパス
+     * @return 生成されたImageIcon
+     * @throws IOException IOException
+     */
+    public static ImageIcon createImage(String path) throws IOException {
+        InputStream stream = Page.class.getClassLoader().getResourceAsStream(path);
         assert stream != null;
         BufferedImage original = ImageIO.read(stream);
         Image icon = original.getScaledInstance(original.getWidth(), original.getHeight(), Image.SCALE_DEFAULT);
         return new ImageIcon(icon);
     }
 
+    /**
+     * ファイルパスをOSに依存しないものに置換する
+     * @param path ファイルパス
+     * @return OSに依存しないファイルパス
+     */
     public static String replaceSep(String path){
         return path.replaceAll("\"", File.separator);
     }
 
+    /**
+     * swingのコンポーネント用にテキストをHTMLとして改行する
+     * @param text 元のテキスト
+     * @return 改行されたテキスト
+     */
     public static String setTextAsHTML(String text){
         String[] array = text.split("\n");
         StringBuilder result = new StringBuilder("<html><body>");
@@ -261,11 +289,18 @@ public class Page {
         return String.valueOf(result);
     }
 
+    /**
+     * グラフィックスの線の幅を変更する
+     * @param width 線の幅
+     */
     public static void setLineWidth(int width){
         BasicStroke bs = new BasicStroke(width);
         gra2.setStroke(bs);
     }
 
+    /**
+     * パネルの初期化
+     */
     public static void init(){
         panel.removeAll();
         panel.draw();

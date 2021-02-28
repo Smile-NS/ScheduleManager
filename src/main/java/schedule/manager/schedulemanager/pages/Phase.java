@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * フェーズの設定欄を司るクラス
+ */
 public class Phase extends Page{
 
     private final JTextField title;
@@ -21,6 +24,12 @@ public class Phase extends Page{
     private final List<Component> compList = new ArrayList<>();
     private static final List<Phase> phaseList = new ArrayList<>();
 
+    /**
+     * コンストラクタ
+     * @param x 設定欄のx座標
+     * @param y 設定欄のy座標
+     * @throws IOException 画像生成で投げられる例外
+     */
     public Phase(int x, int y) throws IOException {
         count++;
 
@@ -67,6 +76,9 @@ public class Phase extends Page{
         panel.draw();
     }
 
+    /**
+     * 設定欄を削除する
+     */
     public void delete(){
         boolean found = false;
         for (Phase phase : phaseList){
@@ -85,6 +97,9 @@ public class Phase extends Page{
         panel.draw();
     }
 
+    /**
+     * 設定欄の位置を繰り上げる
+     */
     private void advance(){
         for (Component comp : compList) {
             Point loc = comp.getLocation();
@@ -92,19 +107,36 @@ public class Phase extends Page{
         }
     }
 
+    /**
+     * 全ての設定欄を取得する
+     * @return 全ての設定欄のリスト
+     */
     public static List<Phase> getPhases(){
         return phaseList;
     }
 
+    /**
+     * フェーズの累積追加回数を取得する
+     * @return フェーズの累積追加回数
+     */
     public static int getCount(){
         return count;
     }
 
+    /**
+     * フェーズのタイトルを取得する
+     * @return フェーズのタイトル
+     */
     public String getTitle(){
         return title.getText();
     }
 
-    public long getTime() throws Exception {
+    /**
+     * フェーズの時間を取得する(秒)
+     * @return フェーズの時間
+     * @throws IllegalSettingException 入力されていた値が数値でない場合
+     */
+    public long getTime() throws IllegalSettingException {
         String sh = hours.getText();
         String sm = minutes.getText();
         String ss = seconds.getText();

@@ -11,6 +11,9 @@ import static schedule.manager.schedulemanager.pages.Page.*;
 import static schedule.manager.schedulemanager.pages.manage.TimeTable.TABLE_X;
 import static schedule.manager.schedulemanager.pages.manage.TimeTable.TABLE_Y;
 
+/**
+ * タイムバーの描画用クラス
+ */
 public class TimeBar {
 
     private final int HEIGHT;
@@ -25,6 +28,12 @@ public class TimeBar {
     private static final int LESS = 1;
     private static final int OVER = 2;
 
+    /**
+     * コンストラクタ
+     * @param color メインタイムバーの色
+     * @param height 高さ
+     * @param phase フェーズの高さ
+     */
     public TimeBar(Color color, int height, int phase) {
         this.COLOR = color;
         this.HEIGHT = height;
@@ -32,11 +41,17 @@ public class TimeBar {
         this.PHASE = phase;
     }
 
+    /**
+     * 進行
+     */
     public void progress() {
         gra.setColor(COLOR);
         gra.fillRect(TABLE_X + 200, TABLE_Y + REM, 300, HEIGHT);
     }
 
+    /**
+     * 前線の描画
+     */
     public void drawFrontLine() {
         gra.setColor(RED);
         setLineWidth(3);
@@ -44,6 +59,9 @@ public class TimeBar {
         gra.drawLine(TABLE_X, TABLE_Y + REM, TABLE_X + 500, TABLE_Y + REM);
     }
 
+    /**
+     * フェーズの最大値との差分の描画
+     */
     public void drawDifference() {
         if (PHASE < REM) {
             gra.setColor(LESS_COLOR);
@@ -56,6 +74,10 @@ public class TimeBar {
         }
     }
 
+    /**
+     * 前線のy座標を取得する
+     * @return 前線のy座標
+     */
     public int getFrontLine() {
         return TABLE_Y + REM;
     }
@@ -76,6 +98,9 @@ public class TimeBar {
         logList.add(log);
     }
 
+    /**
+     * 記録用のバーを描画する
+     */
     public void drawLogs() {
         for(int[] value : logList){
             int start = value[0];
@@ -94,6 +119,9 @@ public class TimeBar {
         }
     }
 
+    /**
+     * 記録用の線を描画する
+     */
     public void drawLogLine() {
         for(int[] value : logList){
             int start = value[0];

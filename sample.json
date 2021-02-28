@@ -1,0 +1,11 @@
+{
+  "type" : "project_time",
+  "title" : "sample",
+  "phases" : {
+    "phase1" : 60,
+    "phase2" : 60,
+    "phase3" : 60,
+    "phase4" : 60,
+    "phase5" : 60
+  }
+}

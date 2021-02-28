@@ -9,11 +9,17 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * ホーム画面
+ */
 public class MenuPage extends Page {
 
     private final JLabel titleIcon = new JLabel();
     private final JLabel titleStr = new JLabel("Schedule Manager");
 
+    /**
+     * コンストラクタ
+     */
     public MenuPage(){
         try {
             init();
@@ -28,6 +34,9 @@ public class MenuPage extends Page {
         }
     }
 
+    /**
+     * ボタンの設置
+     */
     private void setButtonMeta(){
         int width = 250;
         int height = 50;
@@ -56,6 +65,10 @@ public class MenuPage extends Page {
         });
     }
 
+    /**
+     * タイトルの設置
+     * @throws IOException 画像生成時に投げられる例外
+     */
     private void setTitleMeta() throws IOException {
         ImageIcon icon = createImage("textures/icon.png", 100, 100);
 

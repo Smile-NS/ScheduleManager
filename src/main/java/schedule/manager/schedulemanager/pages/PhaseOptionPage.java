@@ -11,10 +11,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * フェーズの設定をするクラス
+ */
 public class PhaseOptionPage extends Page{
 
     private static int pageAmount = 0;
 
+    /**
+     * コンストラクタ
+     */
     public PhaseOptionPage(){
         init();
 
@@ -37,6 +43,10 @@ public class PhaseOptionPage extends Page{
         });
     }
 
+    /**
+     * 設定欄を追加する領域
+     * @throws IOException 画像生成時に投げられる例外
+     */
     private void setCreatePhaseField() throws IOException {
         if (pageAmount == 0) createTextLabel(START_X, START_Y, 200, 25, "フェーズの設定");
         createTextLabel(200, 60, 100, 25, "追加");
@@ -55,7 +65,11 @@ public class PhaseOptionPage extends Page{
         });
     }
 
-    private void onAdd() throws Exception {
+    /**
+     * +ボタンを押したときの処理
+     * @throws IllegalOperationException 一つのページに5つ以上設定欄を追加しようとしたとき
+     */
+    private void onAdd() throws IllegalOperationException {
         List<Phase> phaseList = Phase.getPhases();
         int count = phaseList.size() - pageAmount * 4;
 
@@ -79,12 +93,19 @@ public class PhaseOptionPage extends Page{
         }
     }
 
+    /**
+     * 「次へ」ボタンを押した時の処理
+     */
     @Override
-    protected void onClickedNext() throws IOException{
+    protected void onClickedNext() {
         new ProjectManagePage(json);
         disType = DisplayType.MANAGE;
     }
 
+    /**
+     * プロジェクトを保存する
+     * @throws Exception セーブ時に投げられる例外
+     */
     @Override
     protected void saveProject() throws Exception{
         List<Phase> list = Phase.getPhases();
